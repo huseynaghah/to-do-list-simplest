@@ -1,30 +1,25 @@
-import { ToDo } from "./todoModel.js";
+import { ToDo, State } from "./todoModel.js";
 
 const input = document.querySelector("#todoInput");
 const addBtn = document.querySelector("#add");
 const wrapper = document.querySelector(".todoWrapper");
 const counterSpan = document.querySelector("#counterSpan");
 
-const todoArray = JSON.parse(localStorage.getItem("state")) || [];
 
+let todoManager = new State(JSON.parse(localStorage.getItem("state")));
 
-
+let { data } = todoManager;
 
 addBtn.addEventListener('click', () => {
     if (!input.value.trim()) {
         alert("Write Something!");
         return;
     }
-
-    todoArray.push(new ToDo(input.value));
-    localStorage.setItem("state", JSON.stringify(todoArray))
-
-
+    todoManager.data = new ToDo(input.value);
+    // console.log(State.addTodo); 
+    // localStorage.setItem("state", JSON.stringify(todoArray))
     input.value = "";
-
     renderTodo();
-
-
 })
 
 
@@ -43,7 +38,8 @@ const renderTodo = () => {
     //                          </div>`
     // })
 
-    wrapper.innerHTML = todoArray.map((element, i) => {
+
+    wrapper.innerHTML = data.map((element, i) => {
         return `<div class="toDo" data-index=${i}>
                                  <input type="checkbox" ${element.checked ? "checked" : ""} class="chks">
                                  <p style="text-decoration : ${element.checked ? "line-through" : ""}">${element.content}</p>
@@ -57,28 +53,21 @@ const renderTodo = () => {
     }).join("");
 
     const delBtns = document.querySelectorAll(".delBtn");
-
     delBtns.forEach((btn) => {
         btn.addEventListener('click', (e) => {
             let index = e.target.parentElement.parentElement.dataset.index;
-
-            todoArray.splice(index, 1);
-            localStorage.setItem("state", JSON.stringify(todoArray))
-
+            todoManager.deleteTodo(index);
             renderTodo();
-
-
         })
     })
 
     const editBtn = document.querySelectorAll(".editBtn");
-
     editBtn.forEach((btn) => {
         btn.addEventListener('click', (e) => {
             let index = e.target.parentElement.parentElement.dataset.index;
 
             (async () => {
-                const inputValue = todoArray[index].content;
+                const inputValue = data[index].content;
                 const { value: newValue } = await Swal.fire({
                     title: "Change your to do!",
                     input: "text",
@@ -91,8 +80,9 @@ const renderTodo = () => {
                     }
                 });
                 if (newValue) {
-                    todoArray[index].content = newValue;
-                    localStorage.setItem("state", JSON.stringify(todoArray))
+                    // todoArray[index].content = newValue;
+                    // localStorage.setItem("state", JSON.stringify(todoArray))
+                    todoManager.editTodo(newValue, index)
                     Swal.fire(`To Do successfully changed!`);
                     renderTodo();
                 }
@@ -105,27 +95,16 @@ const renderTodo = () => {
     })
 
     const chks = document.querySelectorAll(".chks");
-
-    chks.forEach((checks)=>{
-        checks.addEventListener('change',(e)=>{
+    chks.forEach((checks) => {
+        checks.addEventListener('change', (e) => {
             let index = e.target.parentElement.dataset.index;
-
-            todoArray[index].checked = ! todoArray[index].checked;
-            localStorage.setItem("state", JSON.stringify(todoArray))
-
+            todoManager.toggleDone(index);
             renderTodo()
         })
     })
 
 
-
-
-    counterSpan.textContent = todoArray.length;
-
-
-    console.log(todoArray);
-    
-
+    counterSpan.textContent = data.length;
 }
 
 renderTodo();
