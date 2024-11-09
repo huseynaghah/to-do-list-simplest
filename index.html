@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To Do List</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 40%;
+            border: 2px solid black;
+            margin: 0 auto;
+            padding: 40px;
+            gap: 35px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .container>* {
+            width: 90%;
+            text-align: center;
+        }
+
+        #todoInput {
+            width: 80%;
+            height: 30px;
+        }
+
+        #add {
+            width: 10%;
+            height: 30px;
+        }
+
+        .todoWrapper {
+            width: 80%;
+        }
+
+        .toDo {
+            display: flex;
+            width: 100%;
+            margin: 0 auto;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            To Do List
+        </h1>
+
+        <div class="addInputs">
+            <input type="text" id="todoInput">
+            <button id="add">+</button>
+        </div>
+
+        <div class="todoWrapper">
+            <!-- <div class="toDo">
+                <input type="checkbox">
+                <p>Salam</p>
+                <div>
+                    <button>Delete</button>
+                    <button>Edit</button>
+                </div>
+
+            </div>
+            <div class="toDo">
+                <input type="checkbox">
+                <p>Salam</p>
+                <div>
+                    <button>Delete</button>
+                    <button>Edit</button>
+                </div>
+
+            </div> -->
+        </div>
+        <p>You have <span id="counterSpan">0</span> todo now!</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://momentjs.com/downloads/moment.js"></script>
+    <script src="./script.js" type="module"></script>
+</body>
+
+</html>
