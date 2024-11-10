@@ -4,11 +4,13 @@ const input = document.querySelector("#todoInput");
 const addBtn = document.querySelector("#add");
 const wrapper = document.querySelector(".todoWrapper");
 const counterSpan = document.querySelector("#counterSpan");
+const searchBox = document.querySelector("#searchBox");
+const sortForDate = document.querySelector("#sortForDate");
+const clearButton = document.querySelector("#clearAll");
+
+let todoManager = new State();
 
 
-let todoManager = new State(JSON.parse(localStorage.getItem("state")));
-
-let { data } = todoManager;
 
 addBtn.addEventListener('click', () => {
     if (!input.value.trim()) {
@@ -16,14 +18,33 @@ addBtn.addEventListener('click', () => {
         return;
     }
     todoManager.data = new ToDo(input.value);
-    // console.log(State.addTodo); 
+
     // localStorage.setItem("state", JSON.stringify(todoArray))
     input.value = "";
     renderTodo();
 })
 
+clearButton.addEventListener('click',()=>{
+    todoManager.clearState();
 
-const renderTodo = () => {
+    renderTodo()
+})
+
+
+sortForDate.addEventListener('change',(e)=>{
+    let sorted = todoManager.sortByDate(e.target.value);
+    renderTodo(sorted)
+    
+})
+
+searchBox.addEventListener('input',(e)=>{
+    let searched = todoManager.searchTodo(e.target.value);
+    renderTodo(searched);
+})
+
+const renderTodo = (array = todoManager.data) => {
+
+
     // wrapper.innerHTML = "";
 
     // todoArray.forEach((element) => {
@@ -38,12 +59,15 @@ const renderTodo = () => {
     //                          </div>`
     // })
 
+  
+    
+    
 
-    wrapper.innerHTML = data.map((element, i) => {
+    wrapper.innerHTML = array.map((element, i) => {
         return `<div class="toDo" data-index=${i}>
                                  <input type="checkbox" ${element.checked ? "checked" : ""} class="chks">
                                  <p style="text-decoration : ${element.checked ? "line-through" : ""}">${element.content}</p>
-                                 <i>${element.date}</i>
+                                 <i>${moment(element.date).format('MMMM Do YYYY, h:mm:ss a')}</i>
                                    <div>
                                        <button class="delBtn">Delete</button>
                                         <button class="editBtn">Edit</button>
@@ -57,7 +81,7 @@ const renderTodo = () => {
         btn.addEventListener('click', (e) => {
             let index = e.target.parentElement.parentElement.dataset.index;
             todoManager.deleteTodo(index);
-            renderTodo();
+            renderTodo(todoManager.searchTodo(searchBox.value));
         })
     })
 
@@ -84,7 +108,7 @@ const renderTodo = () => {
                     // localStorage.setItem("state", JSON.stringify(todoArray))
                     todoManager.editTodo(newValue, index)
                     Swal.fire(`To Do successfully changed!`);
-                    renderTodo();
+                    renderTodo(array);
                 }
             }
             )();
@@ -99,12 +123,12 @@ const renderTodo = () => {
         checks.addEventListener('change', (e) => {
             let index = e.target.parentElement.dataset.index;
             todoManager.toggleDone(index);
-            renderTodo()
+            renderTodo(array)
         })
     })
 
 
-    counterSpan.textContent = data.length;
+    counterSpan.textContent = todoManager.data.length;
 }
 
 renderTodo();
